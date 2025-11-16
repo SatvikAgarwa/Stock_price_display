@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocks Dashboard</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        ✨ Sweet & Sexy Stock Dashboard
+    </header>
+
+    <div class="container">
+
+        <h2>All Available Stocks</h2>
+        <div id="stock-list"></div>
+
+        <h2>Top 5 Performing Stocks (Mock)</h2>
+        <div id="top-stocks"></div>
+
+    </div>
+
+    <footer>
+        Made with ❤️ by Yurie for Satvik
+    </footer>
+
+    <script>
+        // All 20 companies (symbol + real name)
+        const companies = {
+            "AAPL": "Apple Inc.",
+            "MSFT": "Microsoft Corporation",
+            "GOOGL": "Alphabet Inc.",
+            "AMZN": "Amazon.com, Inc.",
+            "META": "Meta Platforms, Inc.",
+            "NVDA": "NVIDIA Corporation",
+            "AMD": "Advanced Micro Devices, Inc.",
+            "TSM": "Taiwan Semiconductor Manufacturing Company Limited",
+            "INTC": "Intel Corporation",
+            "JPM": "JPMorgan Chase & Co.",
+            "BAC": "Bank of America Corporation",
+            "HDFC.NS": "HDFC Bank Limited",
+            "ICICIBANK.NS": "ICICI Bank Limited",
+            "TSLA": "Tesla, Inc.",
+            "TATAMOTORS.NS": "Tata Motors Limited",
+            "MARUTI.NS": "Maruti Suzuki India Limited",
+            "JNJ": "Johnson & Johnson",
+            "PFE": "Pfizer Inc.",
+            "XOM": "Exxon Mobil Corporation",
+            "RELIANCE.NS": "Reliance Industries Limited"
+        };
+
+        // Mock Top 5 performers
+        const topPerformers = {{ top_gainers | tojson }};
+
+        // Render All Stocks
+        const stockDiv = document.getElementById("stock-list");
+        const stockList = document.createElement("ul");
+
+        Object.keys(companies).forEach(symbol => {
+            const li = document.createElement("li");
+            li.textContent = `${symbol} — ${companies[symbol]}`;
+
+            li.onclick = () => {
+                window.location.href = `/stock/${symbol}`;
+            };
+
+            stockList.appendChild(li);
+        });
+
+        stockDiv.appendChild(stockList);
+
+        // Render Top Performers
+        const topDiv = document.getElementById("top-stocks");
+        const topList = document.createElement("ul");
+
+        topPerformers.forEach(stock => {
+            const li = document.createElement("li");
+            li.classList.add("top");
+
+            const percent =
+                stock.change_percent >= 0
+                    ? `+${stock.change_percent.toFixed(2)}%`
+                    : `${stock.change_percent.toFixed(2)}%`;
+
+            li.textContent = `${stock.ticker} — ${percent}`;
+
+            li.onclick = () => {
+                window.location.href = `/stock/${stock.ticker}`;
+            };
+
+            topList.appendChild(li);
+        });
+
+        topDiv.appendChild(topList);
+
+
+    </script>
+
+</body>
+
+</html>

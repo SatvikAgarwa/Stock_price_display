@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ symbol }} • Stock Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        #chart {
+            background: #161b22;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 26px;
+        }
+
+        pre {
+            background: #161b22;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            font-size: 15px;
+            color: #9fb3c8;
+            overflow-x: auto;
+        }
+
+        a.back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            font-size: 16px;
+            background: #238636;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        a.back:hover {
+            background: #2ea043;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    {{ symbol }} Stock Dashboard
+</header>
+
+<div class="container">
+
+    <a href="/" class="back">← Back to Home</a>
+
+    <div id="chart" style="height:400px;"></div>
+
+    <h2>52-Week Summary</h2>
+    <pre id="summary"></pre>
+</div>
+
+<script>
+    fetch(`/data/{{ symbol }}`)
+        .then(r => r.json())
+        .then(res => {
+            const rows = res.data;
+            const dates = rows.map(r => r.Date);
+            const closes = rows.map(r => r.Close);
+
+            Plotly.newPlot("chart", [{
+                x: dates,
+                y: closes,
+                type: "scatter",
+            }], {
+                title: "{{ symbol }} Closing Prices",
+                paper_bgcolor: '#161b22',
+                plot_bgcolor: '#161b22',
+                font: { color: '#e6edf3' }
+            });
+        });
+
+    fetch(`/summary/{{ symbol }}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("summary").innerText =
+                JSON.stringify(data, null, 2);
+        });
+</script>
+
+</body>
+</html>
