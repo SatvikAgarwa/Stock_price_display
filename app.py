@@ -1,11 +1,15 @@
 from flask import Flask, jsonify, request, render_template
+from flask_caching import Cache
 from get_company_data import CompanData, compare_two_comp, get_top_gainers
 from storage import companies_dict
 import os
 
 app = Flask(__name__)
 
+cache = Cache(app, config={"CACHE_TYPE": "simple"})
+
 @app.route("/")
+@cache.cached(timeout=300)
 def home():
     top_gainers = get_top_gainers()
     return render_template("index.html", top_gainers=top_gainers)
@@ -17,6 +21,7 @@ def companies():
 
 
 @app.route("/data/<ticker>")
+@cache.cached(timeout=300)
 def company_data(ticker):
     company = CompanData(ticker)
     data = company.get_data()
@@ -38,6 +43,7 @@ def compare_companies():
 
 
 @app.route("/stock/<symbol>")
+@cache.cached(timeout=300)
 def stock_detail(symbol):
     return render_template("stocks.html", symbol=symbol)
 
@@ -45,7 +51,3 @@ def stock_detail(symbol):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-    app.run(debug=True)
-
-
-
